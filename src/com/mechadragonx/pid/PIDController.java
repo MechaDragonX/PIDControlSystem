@@ -17,8 +17,10 @@ public class PIDController {
     private double error = 0.0;
 
     // Time
+    private double startTime;
     private double timeInc;
-    // private double cycleCount;
+    private double cycleCount;
+    private double deltaTime;
 
     public PIDController(double kProp, double kInt, double kDer, double desired, double timeInc) {
         this.kProp = kProp;
@@ -26,6 +28,7 @@ public class PIDController {
         this.kDer = kDer;
         this.desired = desired;
         this.timeInc = timeInc;
+        startTime = System.currentTimeMillis();
     }
     public PIDController(double kProp, double kInt, double kDer, double desired, double timeInc, double max) {
         this(kProp, kInt, kDer, desired, timeInc);
@@ -45,8 +48,13 @@ public class PIDController {
         return curError * kProp;
     }
     private double calcIntegral() {
-        if(Math.abs(error) < Math.abs(max))
-            this.error += curError * timeInc;
+//        if(Math.abs(error) < Math.abs(max))
+//            this.error += curError * timeInc;
+//        else
+//            error = 0;
+//        return error * kInt;
+        if(curError < 7)
+            error += (curError * deltaTime);
         else
             error = 0;
         return error * kInt;
@@ -54,12 +62,19 @@ public class PIDController {
     private double calcDerivative() {
         return kDer * ((curError - prevError) / timeInc);
     }
+    private double incrementCycle() {
+        cycleCount++;
+        deltaTime = timeInc * cycleCount;
+        return deltaTime;
+    }
 
     public void setMax(double max) {
         this.max = max;
         // reset();
     }
     public double getOutput(double current) {
+        // incrementCycle();
+        deltaTime = System.currentTimeMillis() - startTime;
         setCurrent(current);
         double prop = 0;
         double integ = 0;
