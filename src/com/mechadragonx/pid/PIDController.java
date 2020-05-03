@@ -35,9 +35,17 @@ public class PIDController {
         this.max = max;
     }
 
+    public double getMax() {
+        return max;
+    }
+    public void setMax(double max) {
+        this.max = max;
+        // reset();
+    }
     private void setCurrent(double current) {
         this.current = current;
     }
+
     private double calcCurrentError() {
         // prevError = curError;
         curError = desired - current;
@@ -66,11 +74,6 @@ public class PIDController {
         cycleCount++;
         deltaTime = timeInc * cycleCount;
         return deltaTime;
-    }
-
-    public void setMax(double max) {
-        this.max = max;
-        // reset();
     }
     public double getOutput(double current) {
         // incrementCycle();
